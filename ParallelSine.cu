@@ -46,22 +46,21 @@ void sine_serial(float *input, float *output)
 // kernel function (CUDA device)
 // TODO: Implement your graphics kernel here. See assignment instructions for method information
 
-__global__ void sine_parallel(ﬂoat *input, ﬂoat *output)
+__global__ void sine_parallel(float*input,float*output )
 {
-	int i = threadIdx.x               
-	
+	int i = threadIdx.x;
 	float value = input[i];
-	float numer = value * value * value; 
-    int denom = 6; // 3! 
-    int sign = -1; 
-	for (int j=1; j<=TERMS;j++) 
-	{ 
-		value += sign * numer / denom; 
-		numer *= input[i] * input[i]; 
-		denom *= (2*j+2) * (2*j+3); 
+	float numer = input[i]*input[i]*input[i];
+	int   denom = 6;
+	int   sign = -1;
+	for (int j=1;j<=TERMS; j++)
+	{
+		value += sign *numer/denom;
+		numer *= input[i]* input[i];
+		denom *= (2*j+2)* (2*j+3);
 		sign *= -1; 
-	} 
-	output[i] = value;
+	}
+		output[i] = value;
 }
 
 // BEGIN: timing and error checking routines (do not modify)
