@@ -48,7 +48,8 @@ void sine_serial(float *input, float *output)
 
 __global__ void sine_parallel(float*input,float*output )
 {
-	int i = threadIdx.x;
+	int i = blockIdx.x * blockDim.x + threadIdx.x;
+	
 	float value = input[i];
 	float numer = input[i]*input[i]*input[i];
 	int   denom = 6;
@@ -131,37 +132,37 @@ int main (int argc, char **argv)
 
   //TODO: Prepare and run your kernel, make sure to copy your results back into h_gpu_result and display your timing results
   float *h_gpu_result = (float*)malloc(N*sizeof(float));
-	
-	 //declare GPU memory pointers
+  
+  //declare pointer and variable
   float * d_input;
   float * d_output;
+  int sizeOfVector = (N*sizeof(float));
   
-  //Start timer for entire GPU process
-  long long Total_GPU_start_time = start_timer();
+  long long Total_GPU_time = start_timer();
   
-  //allocate gpu memory
-  long long GPU_memAllocate_start_time = start_timer();
-  cudaMalloc((void **) &d_input, N*sizeof(float));
-  cudaMalloc((void **) &d_output, N*sizeof(float));
-  long long GPU_memAllocate_time = stop_timer(GPU_memAllocate_start_time, "\nGPU Memory Allocation Time");
   
-  //transfer the array to the GPU
-  long long GPU_memToDevice_start_time = start_timer();
-  cudaMemcpy(d_input, h_input, N*sizeof(float), cudaMemcpyHostToevice);
-  long long GPU_memToDevic_time = stop_timer(GPU_memToDevice_start_time, "\nGPU Copy Memory to Device Time");
+  long long Memory_Allocation_stime = start_timer();                     //record time for GPU memory allocation
+  cudaMalloc((void **) &d_input, sizeOfVector);
+  cudaMalloc((void **) &d_output, sizeOfVector);
+  long long Memory_Allocation_etime = stop_timer(Memory_Allocation_stime, "GPU Memory Allocation Time");
+  
+  
+  long long Memory_ToDevice_stime = start_timer();                //record the time copy to Device
+  cudaMemcpy(d_input, h_input, sizeOfVector, cudaMemcpyHostToDevice);
+  long long Memory_ToDevic_etime = stop_timer(Memory_ToDevice_stime, "GPU Copy Memory to Device Time");
 
-  //launch the and time the kernel
-  long long GPU_kernel_start_time = start_timer();
-  sine_parallel<<<1, >>>(d_output, d_input);
-  long long GPU_kernel_time = stop_timer(GPU_kernel_start_time, "\nGPU Kernel Run Time");
+ 
+  long long Kernel_stime = start_timer();                              //record kernel time 
+  sine_parallel<<<N/1024, 1024>>>(d_input, d_output);
+  long long Kernel_etime = stop_timer(Kernel_stime, "GPU Kernel Run Time");
   
-  //copy back the result to the CPU
-  long long GPU_memToHost_start_time = start_timer();
-  cudaMemcpy(h_gpu_result,d_output, N*sizeof(float), cudaMemcpyDeviceToHost);
-  long long GPU_memToHost_time = stop_timer(GPU_memToHost_start_time, "\nGPU Copy Memory to Host Time");
   
-  //Stop the timer for the entire GPU process
-  long long GPU_total_run_time = stop_timer(Total_GPU_start_time, "\nGPU Total Run Time");
+  long long Memory_ToHost_stime = start_timer();                        //copy back to CPU
+  cudaMemcpy(h_gpu_result,d_output, sizeOfVector, cudaMemcpyDeviceToHost);
+  long long Memory_ToHost_etime = stop_timer(Memory_ToHost_stime, "GPU Copy Memory to Host Time");
+  
+  //Stop recording GPU timer
+  long long GPU_total_run_time = stop_timer(Total_GPU_time, "GPU Total Run Time");
   
   //clean memory
   cudaFree(d_input);
