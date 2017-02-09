@@ -1,0 +1,31 @@
+zhuhe@titan:~$ ./test1
+CPU Run Time: 0.38179 sec
+
+GPU Memory Allocation Time: 0.1135 sec
+GPU Copy Memory to Device Time: 0.007529 sec
+GPU Kernel Run Time: 5.1e-05 sec
+GPU Copy Memory to Host Time: 0.013107 sec
+GPU Total Run Time: 0.13429 sec
+Result comparison passed.
+
+zhuhe@titan:~$ ./test1
+
+CPU Run Time: 0.38203 sec
+
+GPU Memory Allocation Time: 0.11561 sec
+GPU Copy Memory to Device Time: 0.007724 sec
+GPU Kernel Run Time: 5.1e-05 sec
+GPU Copy Memory to Host Time: 0.013789 sec
+GPU Total Run Time: 0.13727 sec
+Result comparison passed.
+zhuhe@titan:~$ ./test1
+
+CPU Run Time: 0.38212 sec
+
+GPU Memory Allocation Time: 0.094094 sec
+GPU Copy Memory to Device Time: 0.006908 sec
+GPU Kernel Run Time: 4.2e-05 sec
+GPU Copy Memory to Host Time: 0.012678 sec
+GPU Total Run Time: 0.11381 sec
+Result comparison passed.
+
